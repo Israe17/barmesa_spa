@@ -1,0 +1,16 @@
+.home-image{
+  width: 100%; /* Ajusta el ancho según sea necesario */
+  height: 100vh; /* Ajusta la altura según sea necesario */
+  background-image: url('../../../assets/img/bar.png'); /* Ruta absoluta desde la raíz del servidor */
+  background-size: cover; /* Asegura que la imagen cubra completamente el elemento */
+  background-position: center; /* Centra la imagen */
+  background-repeat: no-repeat; /* Evita que la imagen se repita */
+  display: flex; /* Permite que los elementos hijos se muestren en línea */
+
+  border-radius: 0 0 20px 20px; /* Añade bordes redondeados en la parte inferior */
+  box-shadow: 0 0 25px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 2000px rgba(0, 0, 0, 0.5); /* Añade sombra */
+  background-attachment: fixed;
+}
+.button1{
+  box-shadow: 0 0 25px 0 rgba(0, 0, 0, 0.5);
+}
