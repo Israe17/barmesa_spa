@@ -44,6 +44,98 @@ export class UsersComponent implements OnInit{
         // debugger;
     }
 
+    isEditModalOpen: boolean = false;
+    usertToEdit: user | null = null;
+
+    cancelEdit() {
+    this.isEditModalOpen = false;
+    this.usertToEdit = null;
+    }
+
+  onEdit(form: any) {
+    this.usertToEdit = form;
+    if (this.usertToEdit) {
+      this.isEditModalOpen = true;
+      this.user = this.usertToEdit;
+    }
+
+  }
+
+  onsubmitEdit() {
+    if (this.usertToEdit) {
+      if (this.fileSelected) {
+        this._userService.uploadImage(this.fileSelected).subscribe({
+          next: (response: any) => {
+            if (response.filename) {
+              this.user.image = response.filename;
+              this._userService.update(this.user).subscribe({
+                next: (responseSub: any) => {
+                  this.getUsers();
+                  Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: 'El usuario se ha actualizado correctamente.'
+                  });
+                },
+                error: (error: any) => {
+                  console.error("Error al actualizar el usuario", error);
+                  Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un error al actualizar el usuario. Por favor, inténtalo de nuevo.'
+                  });
+                }
+
+
+              });
+            }else{
+              console.error("Falta el nombre del archivo en la respuesta");
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Falta el nombre del archivo en la respuesta del servidor.'
+              });
+            }
+          },error: (error: any) => {
+            console.error("Error al subir la imagen", error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Hubo un error al subir la imagen del usuario. Por favor, inténtalo de nuevo.'
+            });
+          }
+        });
+      }else{
+        this._userService.update(this.user).subscribe({
+          next: (response: any) => {
+            this.getUsers();
+            Swal.fire({
+              icon: 'success',
+              title: '¡Éxito!',
+              text: 'El usuario se ha actualizado correctamente.'
+            });
+          },
+          error: (error: any) => {
+            console.error("Error al actualizar el usuario", error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Hubo un error al actualizar el usuario. Por favor, inténtalo de nuevo.'
+            });
+          }
+        });
+      }
+
+    }else{
+      console.error("No se ha seleccionado ningún usuario para actualizar");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se ha seleccionado ningún usuario para actualizar. Por favor, selecciona un producto.'
+      });
+    }
+  }
+
     isCrudModalOpen: boolean = false;
 
     closeCrudModal() {
