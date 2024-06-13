@@ -48,7 +48,13 @@ export class UserService {
     update(user:user):Observable<any>{
         let userJson = JSON.stringify(user);
         let params = 'data='+userJson;
-        let headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded');
+        let headers;
+        let bearerToken = sessionStorage.getItem('token');
+        if(bearerToken){
+            headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded').set('bearertoken',bearerToken);
+        }else{
+            headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded');
+        }
         let options = {headers};
         return this._http.post(this.url+'user/update',params,options);
     }

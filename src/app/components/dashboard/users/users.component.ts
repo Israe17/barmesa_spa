@@ -44,6 +44,13 @@ export class UsersComponent implements OnInit{
         // debugger;
     }
 
+    isCrudModalOpen: boolean = false;
+
+    closeCrudModal() {
+      this.isCrudModalOpen = false;
+    }
+
+
     isDeleteModalOpen: boolean = false;
     selectedUserId: number | null = null;
 
@@ -57,21 +64,21 @@ export class UsersComponent implements OnInit{
       this.selectedUserId = null;
     }
 
+
     confirmDelete() {
       console.log("ConfirmDelete llamado");
 
       if (this.selectedUserId !== null) {
-        console.log(`Eliminando producto con ID: ${this.selectedUserId}`);
+        console.log(`Eliminando usuario con ID: ${this.selectedUserId}`);
 
         this._userService.delete(this.selectedUserId).subscribe({
           next: (response: any) => {
-            console.log("Producto eliminado con éxito:", response);
+            console.log("Producto usuario con éxito:", response);
             this.getUsers();
-
             // Mostrar el SweetAlert después de que la eliminación sea exitosa
             Swal.fire({
               icon: 'success',
-              title: 'Producto eliminado',
+              title: 'usuario eliminado',
               showConfirmButton: false,
               timer: 1500
             }).then(() => {
@@ -80,25 +87,25 @@ export class UsersComponent implements OnInit{
 
           },
           error: (error: any) => {
-            console.error("Error al eliminar el producto", error);
+            console.error("Error al eliminar el usuario", error);
 
             // Opcional: Mostrar una alerta en caso de error
             Swal.fire({
               icon: 'error',
-              title: 'Error al eliminar el producto',
-              text: 'No se pudo eliminar el producto. Inténtalo de nuevo.',
+              title: 'Error al eliminar el usuario',
+              text: 'No se pudo eliminar el usuario. Inténtalo de nuevo.',
               showConfirmButton: true
             });
           }
         });
       } else {
-        console.error("No se ha seleccionado ningún producto para eliminar");
+        console.error("No se ha seleccionado ningún usuario para eliminar");
 
         // Opcional: Manejar el caso donde no hay un producto seleccionado
         Swal.fire({
           icon: 'error',
           title: 'Ningún producto seleccionado',
-          text: 'Por favor selecciona un producto para eliminar.',
+          text: 'Por favor selecciona un usuario para eliminar.',
           showConfirmButton: true
         });
       }

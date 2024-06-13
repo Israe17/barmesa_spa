@@ -58,6 +58,31 @@ export class ProductsComponent implements OnInit{
       this.isCardsOpen = false;
     }
 
+    isEditModalOpen: boolean = false;
+    productToEdit: product | null = null;
+
+    openEditModal(product: product) {
+      this.productToEdit = product; // Guarda el producto seleccionado para editar
+      this.isEditModalOpen = true; // Abre el modal en modo de edición
+    }
+
+    // Función para cerrar el modal de edición
+    cancelEdit() {
+      this.isEditModalOpen = false;
+      this.productToEdit = null;
+    }
+
+    // Función para editar el producto
+    onEdit(form: any) {
+      if (form.valid && this.productToEdit) {
+        this._ProductService.(this.productToEdit).subscribe(updatedProduct => {
+          // Aquí podrías manejar la lógica de cómo manejar la respuesta del servicio, como actualizar la lista de productos, etc.
+          this.isEditModalOpen = false;
+          this.productToEdit = null;
+        });
+      }
+    }
+
 
 
     isDeleteModalOpen: boolean = false;

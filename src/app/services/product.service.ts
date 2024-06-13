@@ -25,8 +25,14 @@ export class ProductService {
     update(product:product):Observable<any>{
         let userJson = JSON.stringify(product);
         let params = 'data='+userJson;
-        let headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded');
-        let options = {headers};
+        let headers;
+      let bearerToken = sessionStorage.getItem('token');
+      if(bearerToken){
+          headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded').set('bearertoken',bearerToken);
+      }else{
+          headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded');
+      }
+      let options = {headers};
         return this._http.put(this.url+'producto/',params,options);
     }
 
