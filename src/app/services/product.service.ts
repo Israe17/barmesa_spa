@@ -34,7 +34,7 @@ export class ProductService {
           headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded');
       }
       let options = {headers};
-        return this._http.put(this.url+'producto/update/'+idProd,params,options);
+        return this._http.post(this.url+'producto/update/'+idProd,params,options);
     }
 
     delete(id: number): Observable<any> {

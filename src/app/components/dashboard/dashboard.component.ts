@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterOutlet,RouterLink } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { user } from '../../models/user';
-
+import { server } from '../../services/global';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -14,6 +14,7 @@ export class DashboardComponent {
   public identity:any
   public user:user
   private checkIdentity;
+  public peticionDirectaImgUrl:string=server.url+'user/getimage/' ;
   constructor(
       private _userService:UserService
   ){

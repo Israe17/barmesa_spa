@@ -151,7 +151,7 @@
                                       <button (click)="openShowModal(product.id)"
                                           class=" w-full block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Show</button>
 
-                                      <button (click)="openEditModal(product.id)"
+                                      <button (click)="onEdit(product)"
                                           class=" w-full block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Edit</button>
 
                                       <button (click)="openDeleteConfirmation(product.id)"
@@ -517,7 +517,7 @@ class="sm:ml-64 fixed inset-0 z-50 overflow-y-auto flex items-center justify-cen
                     <img *ngIf="previsualizacion" [src]="previsualizacion" class="mt-2 rounded-lg" alt="Previsualización de la imagen" />
                   </div>
               </div>
-              <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+              <button type="submit" (click)="onsubmitEdit()" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                   Save Changes
               </button>
               <button type="button" (click)="cancelEdit()" class="text-gray-400 bg-transparent hover:bg-gray-'200 hover:text-gray-900 rounded-lg text-sm px-5 py-2.5 text-center dark:hover:bg-gray-600 dark:hover:text-white">
