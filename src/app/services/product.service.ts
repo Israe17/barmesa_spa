@@ -25,6 +25,7 @@ export class ProductService {
     update(product:product):Observable<any>{
         let userJson = JSON.stringify(product);
         let params = 'data='+userJson;
+        let idProd=product.id;
         let headers;
       let bearerToken = sessionStorage.getItem('token');
       if(bearerToken){
@@ -33,7 +34,7 @@ export class ProductService {
           headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded');
       }
       let options = {headers};
-        return this._http.put(this.url+'producto/',params,options);
+        return this._http.put(this.url+'producto/update/'+idProd,params,options);
     }
 
     delete(id: number): Observable<any> {
@@ -126,6 +127,7 @@ export class ProductService {
 
       return this._http.get(this.url+'producto/'+id,options);
     }
+
 
 
 

@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { timer } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
+import { server } from '../../../services/global';
 import Swal from 'sweetalert2';
 @Component({
   selector: 'app-products',
@@ -22,6 +23,7 @@ export class ProductsComponent implements OnInit{
     public fileSelected: any;
     public previsualizacion: string="";
     public imageUrl: any = "";
+    public peticionDirectaImgUrl: string=server.url+"producto/getimage/";
 
 
     constructor(
@@ -35,7 +37,6 @@ export class ProductsComponent implements OnInit{
         this.status = -1;
         this.productLists= [];
         this.filteredProduct = this.productLists;
-
 
     }
 
@@ -58,39 +59,76 @@ export class ProductsComponent implements OnInit{
       this.isCardsOpen = false;
     }
 
+
     isEditModalOpen: boolean = false;
     productToEdit: product | null = null;
 
-    openEditModal(product: product) {
-      this.productToEdit = product; // Guarda el producto seleccionado para editar
-      this.isEditModalOpen = true; // Abre el modal en modo de edición
+   openEditModal(id: number) {
+    let productToEdit = this.productLists.find((product) => product.id === id);
+    if (productToEdit) {
+      console.log("Producto a editar:", productToEdit);
+      this.productToEdit = productToEdit;
+      this.isEditModalOpen = true;
+    }else{
+      console.error("No se encontró el producto con ID:", id);
+    }
     }
 
-    // Función para cerrar el modal de edición
     cancelEdit() {
-      this.isEditModalOpen = false;
-      this.productToEdit = null;
+    this.isEditModalOpen = false;
+    this.productToEdit = null;
     }
 
-    // Función para editar el producto
-    onEdit(form: any) {
-      if (form.valid && this.productToEdit) {
-        this._ProductService.(this.productToEdit).subscribe(updatedProduct => {
-          // Aquí podrías manejar la lógica de cómo manejar la respuesta del servicio, como actualizar la lista de productos, etc.
-          this.isEditModalOpen = false;
-          this.productToEdit = null;
-        });
-      }
-    }
+  onEdit(form: any) {
+    if (this.productToEdit) {
+      this._ProductService.update(this.productToEdit).subscribe({
+        next: (response: any) => {
+          console.log("Producto actualizado con éxito:", response);
+          this.getProducts();
 
+          // Mostrar el SweetAlert después de que la actualización sea exitosa
+          Swal.fire({
+            icon: 'success',
+            title: 'Producto actualizado',
+            showConfirmButton: false,
+            timer: 1500
+          }).then(() => {
+            this.cancelEdit();
+          });
+
+        },
+        error: (error: any) => {
+          console.error("Error al actualizar el producto", error);
+
+          // Opcional: Mostrar una alerta en caso de error
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al actualizar el producto',
+            text: 'No se pudo actualizar el producto. Inténtalo de nuevo.',
+            showConfirmButton: true
+          });
+        }
+      });
+    }
+  }
 
 
     isDeleteModalOpen: boolean = false;
     selectedProductId: number | null = null;
 
-    openDeleteConfirmation(productId: number) {
-      this.isDeleteModalOpen = true;
+    openDeleteConfirmationAndCloseShowModal(productId: number) {
       this.selectedProductId = productId;
+      // Abre el modal de confirmación de eliminación
+      this.openDeleteConfirmation(productId);
+      // Cierra el modal de vista de detalles
+      this.closeShowModal();
+    }
+
+
+    openDeleteConfirmation(productId: number) {
+      this.selectedProductId = productId;
+      this.isDeleteModalOpen = true;
+
     }
 
     closeDeleteModal() {
