@@ -81,17 +81,17 @@ export class UserService {
     }
 
   // Método para obtener una imagen
-  getImage(filename: string): Observable<any> {
-      let headers;
-      let bearerToken = sessionStorage.getItem('token');
-      if(bearerToken){
-        headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded').set('bearertoken',bearerToken);
-    }else{
-        headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded');
+  getImage(filename: string): Observable<Blob> {
+    let headers;
+    let bearerToken = sessionStorage.getItem('token');
+    if (bearerToken) {
+        headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded').set('bearertoken', bearerToken);
+    } else {
+        headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     }
-      let options = { headers };
-      return this._http.get('${this.url}user/getimage/${filename}', options);
-  }
+    let options = { headers, responseType: 'blob' as 'json' };
+    return this._http.get<Blob>(`${this.url}user/getimage/${filename}`, options);
+}
 
   updateImage(image:File,filename:string){
      const formData = new FormData();

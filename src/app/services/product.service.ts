@@ -19,7 +19,7 @@ export class ProductService {
         let params = 'data='+userJson;
         let headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded');
         let options = {headers};
-        return this._http.post(this.url+'produto/',params,options);
+        return this._http.post(this.url+'producto/store',params,options);
     }
 
     update(product:product):Observable<any>{
@@ -27,7 +27,7 @@ export class ProductService {
         let params = 'data='+userJson;
         let headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded');
         let options = {headers};
-        return this._http.put(this.url+'producto/update',params,options);
+        return this._http.put(this.url+'producto/',params,options);
     }
 
     delete(id: number): Observable<any> {
@@ -40,7 +40,7 @@ export class ProductService {
       }
       let options = {headers};
 
-      return this._http.delete(this.url + 'producto/delete/' + id,options);
+      return this._http.delete(this.url + 'producto/' + id,options);
     }
 
     uploadImage(image: File): Observable<any> {
@@ -58,17 +58,18 @@ export class ProductService {
     }
 
   // Método para obtener una imagen
-  getImage(filename: string): Observable<any> {
-      let headers;
-      let bearerToken = sessionStorage.getItem('token');
-      if(bearerToken){
-        headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded').set('bearertoken',bearerToken);
-    }else{
-        headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded');
+  getImage(filename: string): Observable<Blob> {
+    debugger;
+    let headers;
+    let bearerToken = sessionStorage.getItem('token');
+    if (bearerToken) {
+        headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded').set('bearertoken', bearerToken);
+    } else {
+        headers = new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded');
     }
-      let options = { headers };
-      return this._http.get('${this.url}producto/getimage/${filename}', options);
-  }
+    let options = { headers, responseType: 'blob' as 'json' };
+    return this._http.get<Blob>(`${this.url}producto/getimage/${filename}`, options);
+    }
 
   updateImage(image:File,filename:string){
      const formData = new FormData();
@@ -104,7 +105,7 @@ export class ProductService {
           headers = new HttpHeaders().set('Content-Type','application/x-www-form-urlencoded');
       }
       let options = {headers};
-      return this._http.get(this.url+'producto/index',options);
+      return this._http.get(this.url+'producto/',options);
     }
 
     getProduct(id:number):Observable<any>{
@@ -117,7 +118,7 @@ export class ProductService {
       }
       let options = {headers};
 
-      return this._http.get(this.url+'producto/show/'+id,options);
+      return this._http.get(this.url+'producto/'+id,options);
     }
 
 

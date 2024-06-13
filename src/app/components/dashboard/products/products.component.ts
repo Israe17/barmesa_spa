@@ -5,7 +5,8 @@ import { ProductService } from '../../../services/product.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { timer } from 'rxjs';
-
+import { DomSanitizer } from '@angular/platform-browser';
+import Swal from 'sweetalert2';
 @Component({
   selector: 'app-products',
   standalone: true,
@@ -13,24 +14,28 @@ import { timer } from 'rxjs';
   templateUrl: './products.component.html',
   styleUrl: './products.component.css'
 })
-export class ProductsComponent {
+export class ProductsComponent implements OnInit{
 
   public product:product;
     private status:number;
     public productLists: product[];
     public fileSelected: any;
     public previsualizacion: string="";
+    public imageUrl: any = "";
 
 
     constructor(
         private _ProductService:ProductService,
         private _router:Router,
+        private sanitizer: DomSanitizer
+
 
     ){
         this.product = new product(1,"","",1,"");
         this.status = -1;
         this.productLists= [];
         this.filteredProduct = this.productLists;
+
 
     }
 
@@ -41,44 +46,93 @@ export class ProductsComponent {
         // debugger;
     }
 
-    isDeleteModalOpen: boolean = false;
-    selectedUserId: number | null = null;
+    isTableOpen: boolean = true;
+    isCardsOpen: boolean = false;
 
-    openDeleteConfirmation(userId: number) {
+    toggleCards() {
+      this.isTableOpen = false;
+      this.isCardsOpen = true;
+    }
+    toggleTable() {
+      this.isTableOpen = true;
+      this.isCardsOpen = false;
+    }
+
+
+
+    isDeleteModalOpen: boolean = false;
+    selectedProductId: number | null = null;
+
+    openDeleteConfirmation(productId: number) {
       this.isDeleteModalOpen = true;
-      this.selectedUserId = userId;
+      this.selectedProductId = productId;
     }
 
     closeDeleteModal() {
       this.isDeleteModalOpen = false;
-      this.selectedUserId = null;
+      this.selectedProductId = null;
     }
 
     confirmDelete() {
-      if (this.selectedUserId !== null) {
+      console.log("ConfirmDelete llamado");
 
-        this._ProductService.delete(this.selectedUserId).subscribe({
+      if (this.selectedProductId !== null) {
+        console.log(`Eliminando producto con ID: ${this.selectedProductId}`);
+
+        this._ProductService.delete(this.selectedProductId).subscribe({
           next: (response: any) => {
-            console.log(response);
+            console.log("Producto eliminado con éxito:", response);
             this.getProducts();
+
+            // Mostrar el SweetAlert después de que la eliminación sea exitosa
+            Swal.fire({
+              icon: 'success',
+              title: 'Producto eliminado',
+              showConfirmButton: false,
+              timer: 1500
+            }).then(() => {
+              this.closeDeleteModal();
+            });
+
           },
           error: (error: any) => {
             console.error("Error al eliminar el producto", error);
+
+            // Opcional: Mostrar una alerta en caso de error
+            Swal.fire({
+              icon: 'error',
+              title: 'Error al eliminar el producto',
+              text: 'No se pudo eliminar el producto. Inténtalo de nuevo.',
+              showConfirmButton: true
+            });
           }
         });
+      } else {
+        console.error("No se ha seleccionado ningún producto para eliminar");
+
+        // Opcional: Manejar el caso donde no hay un producto seleccionado
+        Swal.fire({
+          icon: 'error',
+          title: 'Ningún producto seleccionado',
+          text: 'Por favor selecciona un producto para eliminar.',
+          showConfirmButton: true
+        });
       }
-      this.closeDeleteModal();
     }
+
 
     isShowModalOpen:boolean = false;
 
     openShowModal(productId:number) {
       this.isShowModalOpen = true;
-      this.selectedUserId = productId;
+      this.selectedProductId = productId;
       this._ProductService.getProduct(productId).subscribe({
         next: (response: any) => {
           console.log(response);
            this.product = response.data;
+           if (this.product && this.product.image) {
+            this.getProductImage(this.product.image);
+          }
         },
         error: (error: any) => {
           console.error("Error al obtener el producto", error);
@@ -88,54 +142,91 @@ export class ProductsComponent {
 
     closeShowModal() {
       this.isShowModalOpen = false;
-      this.selectedUserId = null;
+      this.selectedProductId = null;
     }
 
 
 
     onSubmit(form: any) {
-      if (this.fileSelected) {
+    console.log("Submitting form with product data:", this.product);
+    console.log("File selected:", this.fileSelected);
+    if (this.fileSelected) {
         this._ProductService.uploadImage(this.fileSelected).subscribe({
-          next: (response: any) => {
-            if (response.filename) {
-              this.product.image = response.filename;
-              this._ProductService.store(this.product).subscribe({
-                next: (responseSub: any) => {
-                  form.reset();
-                  this.changeStatus(0);
-                  this.getProducts();
-                },
-                error: (error: any) => {
-                  this.changeStatus(2);
-                  console.error("Error al registrar el producto", error);
+            next: (response: any) => {
+                if (response.filename) {
+                    this.product.image = response.filename;
+                    this._ProductService.store(this.product).subscribe({
+                        next: (responseSub: any) => {
+                            form.reset();
+                            this.changeStatus(0);
+                            this.getProducts();
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Éxito!',
+                                text: 'El producto se ha registrado correctamente.'
+                            });
+                        },
+                        error: (error: any) => {
+                            this.changeStatus(2);
+                            console.error("Error al registrar el producto", error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Hubo un error al registrar el producto. Por favor, inténtalo de nuevo.'
+                            });
+                        }
+                    });
+                } else {
+                    console.error("Falta el nombre del archivo en la respuesta");
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Falta el nombre del archivo en la respuesta del servidor.'
+                    });
                 }
-              });
-            } else {
-              console.error("Falta el nombre del archivo en la respuesta");
+            },
+            error: (error: any) => {
+                console.error("Error al subir la producto", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un error al subir la imagen del producto. Por favor, inténtalo de nuevo.'
+                });
             }
-          },
-          error: (error: any) => {
-            console.error("Error al subir la producto", error);
-          }
         });
-      } else {
+    } else {
         this._ProductService.store(this.product).subscribe({
-          next: (response: any) => {
-            if (response.status == 201) {
-              form.reset();
-              this.changeStatus(0);
-              this.getProducts();
-            } else {
-              this.changeStatus(1);
+            next: (response: any) => {
+                if (response.status == 201) {
+                    form.reset();
+                    this.changeStatus(0);
+                    this.getProducts();
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Éxito!',
+                        text: 'El producto se ha registrado correctamente.'
+                    });
+                } else {
+                    this.changeStatus(1);
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Advertencia',
+                        text: 'Hubo un problema al registrar el producto. Por favor, inténtalo de nuevo.'
+                    });
+                }
+            },
+            error: (error: any) => {
+                this.changeStatus(2);
+                console.error("Error al registrar el producto", error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Hubo un error al registrar el producto. Por favor, inténtalo de nuevo.'
+                });
             }
-          },
-          error: (error: any) => {
-            this.changeStatus(2);
-            console.error("Error al registrar el producto", error);
-          }
         });
-      }
     }
+}
 
     getProducts() {
         this._ProductService.getProducts().subscribe({
@@ -207,18 +298,18 @@ export class ProductsComponent {
 
 
     // Método para obtener la imagen asociada a un usuario
-    getUserImage(filename: string) {
-        this._ProductService.getImage(filename).subscribe({
-            next: (imageBlob: Blob) => {
-                // Crear una URL local para la imagen Blob y devolverla
-                const imageUrl = URL.createObjectURL(imageBlob);
-                return imageUrl;
-            },
-            error: (error: any) => {
-                console.error("Error al obtener la imagen", error);
-            }
-        });
-    }
+    getProductImage(filename: string) {
+      this._ProductService.getImage(filename).subscribe({
+          next: (imageBlob: Blob) => {
+              // Crear una URL local para la imagen Blob y devolverla
+              const imageUrl = URL.createObjectURL(imageBlob);
+              this.previsualizacion = imageUrl;
+          },
+          error: (error: any) => {
+              console.error("Error al obtener la imagen", error);
+          }
+      });
+  }
 
 
     captureFile(event:any){

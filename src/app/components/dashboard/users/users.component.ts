@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { timer } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
-
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-users',
@@ -58,35 +58,68 @@ export class UsersComponent implements OnInit{
     }
 
     confirmDelete() {
+      console.log("ConfirmDelete llamado");
+
       if (this.selectedUserId !== null) {
+        console.log(`Eliminando producto con ID: ${this.selectedUserId}`);
 
         this._userService.delete(this.selectedUserId).subscribe({
           next: (response: any) => {
-            console.log(response);
+            console.log("Producto eliminado con éxito:", response);
             this.getUsers();
+
+            // Mostrar el SweetAlert después de que la eliminación sea exitosa
+            Swal.fire({
+              icon: 'success',
+              title: 'Producto eliminado',
+              showConfirmButton: false,
+              timer: 1500
+            }).then(() => {
+              this.closeDeleteModal();
+            });
+
           },
           error: (error: any) => {
-            console.error("Error al eliminar el usuario", error);
+            console.error("Error al eliminar el producto", error);
+
+            // Opcional: Mostrar una alerta en caso de error
+            Swal.fire({
+              icon: 'error',
+              title: 'Error al eliminar el producto',
+              text: 'No se pudo eliminar el producto. Inténtalo de nuevo.',
+              showConfirmButton: true
+            });
           }
         });
-      }
-      this.closeDeleteModal();
-    }
+      } else {
+        console.error("No se ha seleccionado ningún producto para eliminar");
 
+        // Opcional: Manejar el caso donde no hay un producto seleccionado
+        Swal.fire({
+          icon: 'error',
+          title: 'Ningún producto seleccionado',
+          text: 'Por favor selecciona un producto para eliminar.',
+          showConfirmButton: true
+        });
+      }
+    }
     isShowModalOpen:boolean = false;
 
-    openShowModal(userId:number) {
+    openShowModal(userId: number) {
       this.isShowModalOpen = true;
       this.selectedUserId = userId;
       this._userService.getUser(userId).subscribe({
         next: (response: any) => {
           console.log(response);
-           this.user = response.data;
+          this.user = response.data;
+          if (this.user && this.user.image) {
+            this.getUserImage(this.user.image);
+          }
         },
         error: (error: any) => {
           console.error("Error al obtener el usuario", error);
         }
-      })
+      });
     }
 
     closeShowModal() {
@@ -94,51 +127,84 @@ export class UsersComponent implements OnInit{
       this.selectedUserId = null;
     }
 
-
-
     onSubmit(form: any) {
       if (this.fileSelected) {
-        this._userService.uploadImage(this.fileSelected).subscribe({
-          next: (response: any) => {
-            if (response.filename) {
-              this.user.image = response.filename;
-              this._userService.register(this.user).subscribe({
-                next: (responseSub: any) => {
-                  form.reset();
-                  this.changeStatus(0);
-                  this.getUsers();
-                },
-                error: (error: any) => {
+          this._userService.uploadImage(this.fileSelected).subscribe({
+              next: (response: any) => {
+                  if (response.filename) {
+                      this.user.image = response.filename;
+                      this._userService.register(this.user).subscribe({
+                          next: (responseSub: any) => {
+                              form.reset();
+                              this.changeStatus(0);
+                              this.getUsers();
+                              Swal.fire({
+                                  icon: 'success',
+                                  title: '¡Éxito!',
+                                  text: 'El usuario se ha registrado correctamente.'
+                              });
+                          },
+                          error: (error: any) => {
+                              this.changeStatus(2);
+                              console.error("Error al registrar el usuario", error);
+                              Swal.fire({
+                                  icon: 'error',
+                                  title: 'Error',
+                                  text: 'Hubo un error al registrar el usuario. Por favor, inténtalo de nuevo.'
+                              });
+                          }
+                      });
+                  } else {
+                      console.error("Falta el nombre del archivo en la respuesta");
+                      Swal.fire({
+                          icon: 'error',
+                          title: 'Error',
+                          text: 'Falta el nombre del archivo en la respuesta del servidor.'
+                      });
+                  }
+              },
+              error: (error: any) => {
+                  console.error("Error al subir la imagen", error);
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: 'Hubo un error al subir la imagen del usuario. Por favor, inténtalo de nuevo.'
+                  });
+              }
+          });
+      } else {
+          this._userService.register(this.user).subscribe({
+              next: (response: any) => {
+                  if (response.status == 201) {
+                      form.reset();
+                      this.changeStatus(0);
+                      this.getUsers();
+                      Swal.fire({
+                          icon: 'success',
+                          title: '¡Éxito!',
+                          text: 'El usuario se ha registrado correctamente.'
+                      });
+                  } else {
+                      this.changeStatus(1);
+                      Swal.fire({
+                          icon: 'warning',
+                          title: 'Advertencia',
+                          text: 'Hubo un problema al registrar el usuario. Por favor, inténtalo de nuevo.'
+                      });
+                  }
+              },
+              error: (error: any) => {
                   this.changeStatus(2);
                   console.error("Error al registrar el usuario", error);
-                }
-              });
-            } else {
-              console.error("Falta el nombre del archivo en la respuesta");
-            }
-          },
-          error: (error: any) => {
-            console.error("Error al subir la imagen", error);
-          }
-        });
-      } else {
-        this._userService.register(this.user).subscribe({
-          next: (response: any) => {
-            if (response.status == 201) {
-              form.reset();
-              this.changeStatus(0);
-              this.getUsers();
-            } else {
-              this.changeStatus(1);
-            }
-          },
-          error: (error: any) => {
-            this.changeStatus(2);
-            console.error("Error al registrar el usuario", error);
-          }
-        });
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Error',
+                      text: 'Hubo un error al registrar el usuario. Por favor, inténtalo de nuevo.'
+                  });
+              }
+          });
       }
-    }
+  }
 
     getUsers() {
         this._userService.getUsers().subscribe({
@@ -211,17 +277,17 @@ export class UsersComponent implements OnInit{
 
     // Método para obtener la imagen asociada a un usuario
     getUserImage(filename: string) {
-        this._userService.getImage(filename).subscribe({
-            next: (imageBlob: Blob) => {
-                // Crear una URL local para la imagen Blob y devolverla
-                const imageUrl = URL.createObjectURL(imageBlob);
-                return imageUrl;
-            },
-            error: (error: any) => {
-                console.error("Error al obtener la imagen", error);
-            }
-        });
-    }
+      this._userService.getImage(filename).subscribe({
+          next: (imageBlob: Blob) => {
+              // Crear una URL local para la imagen Blob y devolverla
+              const imageUrl = URL.createObjectURL(imageBlob);
+              this.previsualizacion = imageUrl;
+          },
+          error: (error: any) => {
+              console.error("Error al obtener la imagen", error);
+          }
+      });
+  }
 
 
     captureFile(event:any){
