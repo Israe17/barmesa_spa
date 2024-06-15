@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { product } from '../../../models/product';
+import { categoria } from '../../../models/categoria';
 import { ProductService } from '../../../services/product.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -8,6 +9,7 @@ import { timer } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
 import { server } from '../../../services/global';
 import Swal from 'sweetalert2';
+import { CategoryService } from '../../../services/categoria.service';
 @Component({
   selector: 'app-products',
   standalone: true,
@@ -18,22 +20,25 @@ import Swal from 'sweetalert2';
 export class ProductsComponent implements OnInit {
 
   public product: product;
+  public category: categoria;
   private status: number;
   public productLists: product[];
   public fileSelected: any;
   public previsualizacion: string = "";
   public imageUrl: any = "";
   public peticionDirectaImgUrl: string = server.url + "producto/getimage/";
+  public categoryLists: categoria[] = [];
 
 
   constructor(
     private _ProductService: ProductService,
-    private _router: Router,
-    private sanitizer: DomSanitizer
+    private _CategoryService: CategoryService,
+
 
 
   ) {
-    this.product = new product(1, "", "", 1, "");
+    this.product = new product(1, "", "", 1, "", 1);
+    this.category = new categoria(1, "");
     this.status = -1;
     this.productLists = [];
     this.filteredProduct = this.productLists;
@@ -44,7 +49,87 @@ export class ProductsComponent implements OnInit {
     this.getProducts();
     this.visibleData();
     this.pageNumbers();
+    this.getCategories();
     // debugger;
+  }
+
+  deleteCategary(id: number) {
+    this._CategoryService.deleteCategoria(id).subscribe({
+      next: (response: any) => {
+        console.log(response);
+        Swal.fire({
+          icon: 'success',
+          title: '¡Éxito!',
+          text: 'La categoría se ha eliminado correctamente.'
+        });
+      },
+      error: (error: any) => {
+        console.error("Error al eliminar la categoría", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error al eliminar la categoría. Por favor, inténtalo de nuevo.'
+        });
+      }
+    });
+  }
+
+  filterByCategory(id: number) {
+    if (id == 0) {
+      this.filteredProduct = this.productLists;
+    } else {
+      this.filteredProduct = this.productLists.filter((product) => product.idCategoria == id);
+    }
+    this.currentPage = 1;
+  }
+
+  onSubmitCategory(form: any) {
+    this._CategoryService.store(this.category).subscribe({
+      next: (response: any) => {
+        console.log(response);
+        form.reset();
+        this.getCategories();
+        Swal.fire({
+          icon: 'success',
+          title: '¡Éxito!',
+          text: 'La categoría se ha registrado correctamente.'
+        });
+      },
+      error: (error: any) => {
+        console.error("Error al registrar la categoría", error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Hubo un error al registrar la categoría. Por favor, inténtalo de nuevo.'
+        });
+      }
+    });
+  }
+
+  issDropdownOpen: boolean = false;
+
+  toggleDropdowns() {
+    this.issDropdownOpen = this.issDropdownOpen ? false : true;
+  }
+
+
+  getCategoryOfProduct(id: number): string {
+    let category = this.categoryLists.find((category) => category.id == id);
+    return category ? category.nombre : "No asignada";
+  }
+
+
+  getCategories() {
+    this._CategoryService.getCategorias().subscribe({
+      next: (response: any) => {
+        console.log(response);
+
+        this.categoryLists = response.data;
+      },
+      error: (error: any) => {
+        console.error("Error al obtener las categorías", error);
+      }
+    });
   }
 
   isTableOpen: boolean = true;
@@ -58,7 +143,6 @@ export class ProductsComponent implements OnInit {
     this.isTableOpen = true;
     this.isCardsOpen = false;
   }
-
 
   isEditModalOpen: boolean = false;
   productToEdit: product | null = null;
@@ -104,7 +188,7 @@ export class ProductsComponent implements OnInit {
 
 
               });
-            }else{
+            } else {
               console.error("Falta el nombre del archivo en la respuesta");
               Swal.fire({
                 icon: 'error',
@@ -112,7 +196,7 @@ export class ProductsComponent implements OnInit {
                 text: 'Falta el nombre del archivo en la respuesta del servidor.'
               });
             }
-          },error: (error: any) => {
+          }, error: (error: any) => {
             console.error("Error al subir la imagen", error);
             Swal.fire({
               icon: 'error',
@@ -121,7 +205,7 @@ export class ProductsComponent implements OnInit {
             });
           }
         });
-      }else{
+      } else {
         this._ProductService.update(this.product).subscribe({
           next: (response: any) => {
             this.getProducts();
@@ -142,7 +226,7 @@ export class ProductsComponent implements OnInit {
         });
       }
 
-    }else{
+    } else {
       console.error("No se ha seleccionado ningún producto para actualizar");
       Swal.fire({
         icon: 'error',
@@ -151,10 +235,6 @@ export class ProductsComponent implements OnInit {
       });
     }
   }
-
-
-
-
 
   isDeleteModalOpen: boolean = false;
   selectedProductId: number | null = null;
@@ -250,8 +330,6 @@ export class ProductsComponent implements OnInit {
     this.isShowModalOpen = false;
     this.selectedProductId = null;
   }
-
-
 
   onSubmit(form: any) {
     console.log("Submitting form with product data:", this.product);

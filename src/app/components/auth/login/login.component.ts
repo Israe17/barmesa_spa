@@ -33,7 +33,12 @@ export class LoginComponent {
                     this._userService.getIdentityFromAPI().subscribe({
                         next:(resp:any)=>{
                             sessionStorage.setItem("identity",JSON.stringify(resp));
-                            this._router.navigate(['dashboard']);
+                            let identity = JSON.parse(sessionStorage.getItem("identity") ?? "{}");
+                            if(identity.rol == "user_role"){
+                                this._router.navigate(['dashboard']);
+                            }else{
+                                this._router.navigate(['menu']);
+                            }
                         },
                         error:(error:Error)=>{
                             console.log(error);

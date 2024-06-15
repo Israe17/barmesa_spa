@@ -44,6 +44,9 @@ export class UsersComponent implements OnInit{
         // debugger;
     }
 
+
+
+
     isEditModalOpen: boolean = false;
     usertToEdit: user | null = null;
 
@@ -52,7 +55,7 @@ export class UsersComponent implements OnInit{
     this.usertToEdit = null;
     }
 
-  onEdit(form: any) {
+    onEdit(form: any) {
     this.usertToEdit = form;
     if (this.usertToEdit) {
       this.isEditModalOpen = true;
