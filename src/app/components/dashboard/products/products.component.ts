@@ -10,6 +10,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { server } from '../../../services/global';
 import Swal from 'sweetalert2';
 import { CategoryService } from '../../../services/categoria.service';
+
 @Component({
   selector: 'app-products',
   standalone: true,
@@ -29,12 +30,9 @@ export class ProductsComponent implements OnInit {
   public peticionDirectaImgUrl: string = server.url + "producto/getimage/";
   public categoryLists: categoria[] = [];
 
-
   constructor(
     private _ProductService: ProductService,
     private _CategoryService: CategoryService,
-
-
 
   ) {
     this.product = new product(1, "", "", 1, "", 1);
@@ -53,10 +51,45 @@ export class ProductsComponent implements OnInit {
     // debugger;
   }
 
+  isOpenDeleteCorfirmationCategory: boolean = false;
+  selectedCategoryId: number | null = null;
+
+  openDeleteCorfirmationCategory(id: number) {
+    this.isOpenDeleteCorfirmationCategory = true;
+    this.selectedCategoryId = id;
+  }
+
+  closeDeleteCorfirmationCategory() {
+    this.isOpenDeleteCorfirmationCategory = false;
+    this.selectedCategoryId = null;
+  }
+
+  confirmDeleteCategory() {
+    console.log("ConfirmDelete llamado");
+
+    if (this.selectedCategoryId !== null) {
+      console.log(`Eliminando categoria con ID: ${this.selectedCategoryId}`);
+
+      this.deleteCategary(this.selectedCategoryId);
+      this.closeDeleteCorfirmationCategory();
+    } else {
+      console.error("No se ha seleccionado ningúna categoria para eliminar");
+
+      // Opcional: Manejar el caso donde no hay un producto seleccionado
+      Swal.fire({
+        icon: 'error',
+        title: 'Ningúna categoria seleccionado',
+        text: 'Por favor selecciona un categoria para eliminar.',
+        showConfirmButton: true
+      });
+    }
+  }
+
   deleteCategary(id: number) {
     this._CategoryService.deleteCategoria(id).subscribe({
       next: (response: any) => {
         console.log(response);
+        this.getCategories();
         Swal.fire({
           icon: 'success',
           title: '¡Éxito!',
@@ -112,7 +145,6 @@ export class ProductsComponent implements OnInit {
     this.issDropdownOpen = this.issDropdownOpen ? false : true;
   }
 
-
   getCategoryOfProduct(id: number): string {
     let category = this.categoryLists.find((category) => category.id == id);
     return category ? category.nombre : "No asignada";
@@ -123,7 +155,6 @@ export class ProductsComponent implements OnInit {
     this._CategoryService.getCategorias().subscribe({
       next: (response: any) => {
         console.log(response);
-
         this.categoryLists = response.data;
       },
       error: (error: any) => {
@@ -185,8 +216,6 @@ export class ProductsComponent implements OnInit {
                     text: 'Hubo un error al actualizar el producto. Por favor, inténtalo de nuevo.'
                   });
                 }
-
-
               });
             } else {
               console.error("Falta el nombre del archivo en la respuesta");
@@ -225,7 +254,6 @@ export class ProductsComponent implements OnInit {
           }
         });
       }
-
     } else {
       console.error("No se ha seleccionado ningún producto para actualizar");
       Swal.fire({
@@ -251,7 +279,6 @@ export class ProductsComponent implements OnInit {
   openDeleteConfirmation(productId: number) {
     this.selectedProductId = productId;
     this.isDeleteModalOpen = true;
-
   }
 
   closeDeleteModal() {
@@ -269,6 +296,7 @@ export class ProductsComponent implements OnInit {
         next: (response: any) => {
           console.log("Producto eliminado con éxito:", response);
           this.getProducts();
+          this.closeDeleteModal();
 
           // Mostrar el SweetAlert después de que la eliminación sea exitosa
           Swal.fire({
@@ -276,14 +304,10 @@ export class ProductsComponent implements OnInit {
             title: 'Producto eliminado',
             showConfirmButton: false,
             timer: 1500
-          }).then(() => {
-            this.closeDeleteModal();
           });
-
         },
         error: (error: any) => {
           console.error("Error al eliminar el producto", error);
-
           // Opcional: Mostrar una alerta en caso de error
           Swal.fire({
             icon: 'error',
@@ -479,8 +503,6 @@ export class ProductsComponent implements OnInit {
     this.visibleData();
   }
 
-
-
   // Método para obtener la imagen asociada a un usuario
   getProductImage(filename: string) {
     this._ProductService.getImage(filename).subscribe({
@@ -494,7 +516,6 @@ export class ProductsComponent implements OnInit {
       }
     });
   }
-
 
   captureFile(event: any) {
     let file = event.target.files[0];
