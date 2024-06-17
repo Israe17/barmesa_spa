@@ -10,6 +10,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { server } from '../../../services/global';
 import Swal from 'sweetalert2';
 import { CategoryService } from '../../../services/categoria.service';
+import { initFlowbite } from 'flowbite';
+
 
 @Component({
   selector: 'app-products',
@@ -44,12 +46,21 @@ export class ProductsComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    initFlowbite();
     this.getProducts();
     this.visibleData();
     this.pageNumbers();
     this.getCategories();
     // debugger;
   }
+
+
+
+
+
+
+
+
 
   isOpenDeleteCorfirmationCategory: boolean = false;
   selectedCategoryId: number | null = null;

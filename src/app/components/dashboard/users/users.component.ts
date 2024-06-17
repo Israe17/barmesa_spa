@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { timer } from 'rxjs';
 import { DomSanitizer } from '@angular/platform-browser';
 import Swal from 'sweetalert2';
+import { server } from '../../../services/global';
 
 @Component({
   selector: 'app-users',
@@ -21,6 +22,9 @@ export class UsersComponent implements OnInit{
     public userLists: user[];
     public fileSelected: any;
     public previsualizacion: string="";
+    public peticionDirectaImgUrl: string = server.url + "producto/getimage/";
+
+
 
 
 
