@@ -10,7 +10,8 @@ import { ProductsComponent } from './components/dashboard/products/products.comp
 import { ProvidersComponent } from './components/dashboard/providers/providers.component';
 import { LoginComponent } from './components/auth/login/login.component';
 import { RegisterComponent } from './components/auth/register/register.component';
-
+import { AddOrdersComponent } from './components/dashboard/tables/add-orders/add-orders.component';
+import { AddTableComponent } from './components/dashboard/tables/add-table/add-table.component';
 export const routes: Routes = [
     { path: '', component: HomeComponent,
       children: [{
@@ -33,6 +34,13 @@ export const routes: Routes = [
           },{
           path: 'tables',
           component: TablesComponent,
+          children:[{
+            path: '',
+            component: AddTableComponent
+          }, {
+            path: 'add-orders',
+            component: AddOrdersComponent
+          }]
           },{
           path: 'products',
           component: ProductsComponent,

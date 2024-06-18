@@ -33,6 +33,7 @@ export class UsersComponent implements OnInit{
         private _router:Router,
         private sanitizer: DomSanitizer
 
+
     ){
         this.user = new user(1,"","","","","","","","");
         this.status = -1;
@@ -42,6 +43,7 @@ export class UsersComponent implements OnInit{
     }
 
     ngOnInit(): void{
+
         this.getUsers();
         this.visibleData();
         this.pageNumbers();

@@ -1,0 +1,12 @@
+.fixed {
+  position: fixed;
+  z-index: 1000; /* Asegúrate de que el valor sea suficientemente alto */
+}
+
+/* Estilos para las cartas de productos */
+.group {
+  position: relative;
+  z-index: 10; /* Este valor debe ser menor que el del modal */
+}
+
+
