@@ -13,13 +13,13 @@ import { initFlowbite } from 'flowbite';
 import { pedidoProducto } from '../../../../models/pedidoproducto';
 import { PedidoProdService }from '../../../../services/pedidoproducto.service';
 import { PedidoService } from '../../../../services/pedido.service';
-import { RouteConfigLoadEnd } from '@angular/router';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+
 
 @Component({
   selector: 'app-add-orders',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterLink],
   templateUrl: './add-orders.component.html',
   styleUrl: './add-orders.component.css'
 })
@@ -64,6 +64,8 @@ export class AddOrdersComponent implements OnInit{
     this.getCategories();
     // debugger;
   }
+
+
 
   isDeleteModalOpen: boolean = false;
   openDeleteModal(){
