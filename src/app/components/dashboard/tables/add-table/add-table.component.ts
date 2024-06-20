@@ -47,6 +47,9 @@ export class AddTableComponent implements OnInit{
     this.getTables();
   }
 
+
+
+
   isDropdownOpen: boolean[] = [];
 
   toggleDropdown(index: number) {

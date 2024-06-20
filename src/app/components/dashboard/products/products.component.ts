@@ -58,10 +58,6 @@ export class ProductsComponent implements OnInit {
 
 
 
-
-
-
-
   isOpenDeleteCorfirmationCategory: boolean = false;
   selectedCategoryId: number | null = null;
 
@@ -128,6 +124,7 @@ export class ProductsComponent implements OnInit {
   }
 
   onSubmitCategory(form: any) {
+
     this._CategoryService.store(this.category).subscribe({
       next: (response: any) => {
         console.log(response);
@@ -501,6 +498,7 @@ export class ProductsComponent implements OnInit {
     return pageNumArray;
 
   }
+
   filterData(searchTerm: string) {
     this.filteredProduct = this.productLists.filter((item) => {
       return Object.values(item).some((value) => {

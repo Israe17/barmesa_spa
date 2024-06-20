@@ -368,6 +368,7 @@ export class UsersComponent implements OnInit{
       return pageNumArray;
 
     }
+
     filterData(searchTerm: string) {
         this.filteredUser = this.userLists.filter((item) => {
           return Object.values(item).some((value) => {
@@ -376,6 +377,7 @@ export class UsersComponent implements OnInit{
         });
 
       }
+
       goToPage(page: number) {
         this.currentPage = page;
         this.visibleData();
