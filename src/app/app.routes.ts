@@ -13,8 +13,12 @@ import { RegisterComponent } from './components/auth/register/register.component
 import { AddOrdersComponent } from './components/dashboard/tables/add-orders/add-orders.component';
 import { AddTableComponent } from './components/dashboard/tables/add-table/add-table.component';
 import { PayOrderComponent } from './components/dashboard/tables/pay-order/pay-order.component';
+import { ContactComponent } from './components/home/contact/contact.component';
 
 export const routes: Routes = [
+    
+ 
+
     { path: '', component: HomeComponent,
       children: [{
         path: '',
@@ -22,6 +26,12 @@ export const routes: Routes = [
       },{
         path: 'menu',
         component: MenuComponent
+      },{
+        path: 'login',
+         component: LoginComponent
+      },{
+        path: 'contacto',
+        component: ContactComponent
       }]
     },
     {

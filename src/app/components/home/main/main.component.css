@@ -182,3 +182,112 @@ ul .booking-card:hover .informations-container .more-information {
     opacity: 1;
   }
 }
+
+
+.content {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-wrap: wrap;
+ 
+}
+
+.left {
+  flex: 1;
+  padding: 20px;
+  margin: 20px;
+  margin-left: 9rem;
+  margin-top: 9rem;
+}
+
+
+.TP {
+  font-family: "Monsieur La Doulaise", cursive;
+  font-weight: 700;
+  font-style: normal;
+  color: rgb(255, 0, 0);
+  font-size: 2rem;
+  text-align: center;
+
+}
+
+.TG {
+  color: #000;
+  font-size: 10rem;
+  font-family: "Six Caps", sans-serif;
+  font-weight: 1000;
+  font-style: normal;
+  text-align: center;
+}
+
+.T {
+  color: #a5a5a5;
+  font-size: 6rem;
+  font-family: "Six Caps", sans-serif;
+  font-weight: 1000;
+  font-style: normal;
+  text-align: center;
+}
+
+.right {
+  flex: 2;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+
+
+
+
+@media (max-width: 1198px) {
+
+  .logo {
+      font-size: 1rem;
+  }
+
+  .content {
+      flex-direction: column;
+  }
+
+  .left {
+      margin-left: 20px;
+      margin-bottom: 10rem;
+
+  }
+
+
+
+  .TG {
+      font-size: 9rem;
+  }
+
+  .title1 {
+      font-size: 3rem;
+      padding: 4px;
+  }
+
+  .title2 {
+      font-size: 4rem;
+      padding: 4 px;
+  }
+
+  .section {
+      flex-direction: column-reverse;
+  }
+
+  .right {
+
+      height: 500px;
+  }
+
+  iframe {
+      width: 100%;
+      height: 800px;
+      border: none;
+  }
+
+}
