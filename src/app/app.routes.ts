@@ -10,6 +10,9 @@ import { ProductsComponent } from './components/dashboard/products/products.comp
 import { ProvidersComponent } from './components/dashboard/providers/providers.component';
 import { LoginComponent } from './components/auth/login/login.component';
 import { RegisterComponent } from './components/auth/register/register.component';
+import { AddOrdersComponent } from './components/dashboard/tables/add-orders/add-orders.component';
+import { AddTableComponent } from './components/dashboard/tables/add-table/add-table.component';
+import { PayOrderComponent } from './components/dashboard/tables/pay-order/pay-order.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent,
@@ -33,6 +36,16 @@ export const routes: Routes = [
           },{
           path: 'tables',
           component: TablesComponent,
+          children:[{
+            path: '',
+            component: AddTableComponent
+          }, {
+            path: 'add-orders',
+            component: AddOrdersComponent
+          }, {
+            path: 'pay-order',
+            component: PayOrderComponent
+          }]
           },{
           path: 'products',
           component: ProductsComponent,

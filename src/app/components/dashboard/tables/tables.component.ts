@@ -1,12 +1,17 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-tables',
   standalone: true,
-  imports: [],
+  imports: [ RouterOutlet],
   templateUrl: './tables.component.html',
   styleUrl: './tables.component.css'
 })
-export class TablesComponent {
+export class TablesComponent  {
+
 
 }
+
+
+

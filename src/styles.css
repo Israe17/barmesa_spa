@@ -106,4 +106,6 @@
 			background-color: #667eea !important;
 			/*bg-indigo-500*/
 		}
-
+    .bg{
+      backdrop-filter: blur(2px);
+    }
